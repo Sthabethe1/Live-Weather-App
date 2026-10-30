@@ -1,0 +1,439 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap");
+
+/* weather variables */
+.app {
+  --sky-top: #e8eef5;
+  --sky-bottom: #cfd9e6;
+  --ink: #1b2430;
+  --ink-soft: #566274;
+  --panel: rgba(255, 255, 255, 0.55);
+  --line: rgba(27, 36, 48, 0.14);
+  --accent: #2f6fdb;
+
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+  color: var(--ink);
+  font-family: "Figtree", system-ui, sans-serif;
+  transition: background 0.6s ease, color 0.4s ease;
+}
+
+.app[data-theme="clear"] {
+  --sky-top: #5ab0f5;
+  --sky-bottom: #ffe9a8;
+  --ink: #10243d;
+  --ink-soft: #3d5572;
+  --accent: #d9730d;
+}
+.app[data-theme="cloudy"] {
+  --sky-top: #8c9db0;
+  --sky-bottom: #c9d2dc;
+  --ink: #1d2733;
+  --ink-soft: #46556a;
+}
+.app[data-theme="fog"] {
+  --sky-top: #b9bfc4;
+  --sky-bottom: #e2e4e3;
+  --ink: #272b2f;
+  --ink-soft: #5b6167;
+  --accent: #5d6b78;
+}
+.app[data-theme="rain"] {
+  --sky-top: #3b5068;
+  --sky-bottom: #7d93a8;
+  --ink: #f2f6fa;
+  --ink-soft: #cdd8e3;
+  --panel: rgba(12, 24, 38, 0.35);
+  --line: rgba(255, 255, 255, 0.2);
+  --accent: #8ec5ff;
+}
+.app[data-theme="storm"] {
+  --sky-top: #1f2433;
+  --sky-bottom: #4a4f66;
+  --ink: #f4f2fb;
+  --ink-soft: #c3c0d6;
+  --panel: rgba(8, 10, 20, 0.4);
+  --line: rgba(255, 255, 255, 0.18);
+  --accent: #ffd54a;
+}
+.app[data-theme="snow"] {
+  --sky-top: #cfe3f3;
+  --sky-bottom: #f6fafd;
+  --ink: #17324a;
+  --ink-soft: #4d6a82;
+  --accent: #2b86c5;
+}
+.app[data-theme="night"] {
+  --sky-top: #0b1330;
+  --sky-bottom: #2b2f63;
+  --ink: #eef0ff;
+  --ink-soft: #b3b8e0;
+  --panel: rgba(6, 8, 24, 0.4);
+  --line: rgba(255, 255, 255, 0.18);
+  --accent: #ffd98a;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+h1,
+h2,
+.temp,
+.place {
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+}
+h1 {
+  font-size: 1.5rem;
+  margin: 0 0 1.25rem;
+  font-weight: 700;
+}
+h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.9rem;
+  font-weight: 700;
+}
+
+/* Search */
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+input[type="search"] {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+}
+input::placeholder {
+  color: var(--ink-soft);
+}
+button {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.app[data-theme="storm"] button:not(.ghost):not(.chip),
+.app[data-theme="night"] button:not(.ghost):not(.chip) {
+  color: #14131f;
+}
+button.ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.recents {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+.chip {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+/* Status messages */
+.empty,
+.loading,
+.error {
+  margin: 2rem 0;
+  max-width: 52ch;
+  line-height: 1.5;
+}
+.loading,
+.empty {
+  color: var(--ink-soft);
+}
+.error {
+  padding: 0.9rem 1rem;
+  border-left: 4px solid #e5484d;
+  background: var(--panel);
+  border-radius: 6px;
+}
+
+/* Current conditions: */
+.current {
+  margin: 2rem 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.place {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.temp {
+  margin: 0;
+  font-size: clamp(5rem, 22vw, 9rem);
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+.temp span {
+  font-size: 0.35em;
+  font-weight: 500;
+  vertical-align: top;
+  margin-left: 0.1em;
+  letter-spacing: 0;
+}
+.condition {
+  margin: 0.4rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+.range {
+  margin: 0.2rem 0 0;
+  color: var(--ink-soft);
+}
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+}
+.stats dt {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Panels */
+.grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  backdrop-filter: blur(8px);
+}
+.muted {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.forecast {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.forecast li {
+  display: grid;
+  grid-template-columns: 4rem 2rem 3rem 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--line);
+}
+.forecast li:first-child {
+  border-top: none;
+}
+.fday {
+  font-weight: 600;
+}
+.ficon {
+  font-size: 1.3rem;
+}
+.frain {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.ftemps {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Air quality */
+.aqi-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.aqi-label {
+  margin: 0 0 0.2rem;
+  font-weight: 600;
+}
+.aqi-badge {
+  min-width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111;
+  background: #ccc;
+}
+.aqi-badge.good { background: #7ddc8c; }
+.aqi-badge.moderate { background: #f5dc5b; }
+.aqi-badge.sensitive { background: #f7a954; }
+.aqi-badge.unhealthy { background: #ef6a5e; }
+.aqi-badge.very { background: #b070d6; color: #fff; }
+.aqi-badge.hazard { background: #7a2b44; color: #fff; }
+
+footer {
+  margin-top: 2.5rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+footer a {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app {
+    transition: none;
+  }
+}
+
+/* Additional controls for location selection and display units */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.app-header h1 {
+  margin-bottom: 0;
+}
+
+.unit-controls,
+.unit-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.unit-controls button {
+  padding: 0.45rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.unit-controls .unit-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+
+.unit-controls .ghost {
+  background: var(--panel);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.place-choices {
+  margin: 1.5rem 0;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.place-choices h2 {
+  margin-bottom: 0.75rem;
+}
+
+.place-choices ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.place-choices li + li {
+  border-top: 1px solid var(--line);
+}
+
+.place-choice {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  text-align: left;
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  border-radius: 8px;
+  padding: 0.8rem 0.25rem;
+}
+
+.place-choice:hover {
+  background: var(--panel);
+}
+
+.place-choice small {
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.cancel-choice {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .place-choice {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}

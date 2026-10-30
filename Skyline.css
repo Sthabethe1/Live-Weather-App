@@ -1,0 +1,27 @@
+.skyline {
+  margin-top: 2.5rem;
+  pointer-events: none;
+}
+
+.skyline svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Colours come from the current theme, so the skyline always fits the page */
+.sky-mountain {
+  fill: var(--ink);
+  opacity: 0.08;
+}
+.sky-back {
+  fill: var(--ink);
+  opacity: 0.14;
+}
+.sky-front {
+  fill: var(--ink);
+  opacity: 0.8;
+}
+.sky-windows {
+  fill: #ffd98a;
+}

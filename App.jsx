@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
+import Skyline from "./Skyline";
 
 /* ---------- Constants & helpers ---------- */
 
@@ -436,7 +437,7 @@ export default function App() {
     <div className="app" data-theme={theme}>
       <main>
         <header className="app-header">
-          <h1>Weather &amp; air</h1>
+          <h1>Skyline Weather</h1>
           <UnitControls
             temperatureUnit={temperatureUnit}
             windSpeedUnit={windSpeedUnit}
@@ -449,7 +450,10 @@ export default function App() {
         <Recents items={recent} onPick={load} />
 
         {status === "idle" && (
-          <p className="empty">Search for a city or use your location to see current conditions and the week ahead.</p>
+          <>
+            <p className="empty">Search for a city or use your location to see current conditions and the week ahead.</p>
+            <Skyline />
+          </>
         )}
         {status === "loading" && <p className="loading">Loading conditions…</p>}
         {status === "choosing" && (

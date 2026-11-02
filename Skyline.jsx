@@ -71,7 +71,7 @@ function makeScene() {
 }
 
 export default function Skyline() {
-  // Built once per page load, so each visit shows a different skyline
+  // Built once per page load, each visit shows a different skyline
   const [scene] = useState(makeScene);
 
   return (
